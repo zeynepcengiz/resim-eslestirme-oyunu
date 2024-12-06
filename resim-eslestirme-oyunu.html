@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resim Eşleştirme Oyunu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            gap: 10px;
+            justify-content: center;
+        }
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0;
+        }
+        .card img {
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+        .card.matched img,
+        .card.flipped img {
+            display: block;
+        }
+        .card.matched {
+            background-color: #8f8;
+            cursor: default;
+        }
+    </style>
+</head>
+<body>
+    <h1>Resim Eşleştirme Oyunu</h1>
+    <div class="game-board" id="gameBoard"></div>
+
+    <script>
+        const images = [
+            'OIP (5).jpg',
+            'OIP.jpg',
+            '4df1f04534252ec29affa6eb4558c02d.jpg',
+            'OIP (1).jpg',
+            'OIP (5).jpg',
+            'OIP.jpg',
+            '4df1f04534252ec29affa6eb4558c02d.jpg',
+            'OIP (1).jpg'
+        ];
+
+        let shuffledImages = images.sort(() => 0.5 - Math.random());
+        const gameBoard = document.getElementById('gameBoard');
+        let flippedCards = [];
+        let matchedCount = 0;
+
+        function createCard(image) {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.dataset.image = image;
+
+            const img = document.createElement('img');
+            img.src = image;
+            card.appendChild(img);
+
+            card.addEventListener('click', () => {
+                if (card.classList.contains('flipped') || card.classList.contains('matched') || flippedCards.length === 2) {
+                    return;
+                }
+
+                card.classList.add('flipped');
+                flippedCards.push(card);
+
+                if (flippedCards.length === 2) {
+                    checkForMatch();
+                }
+            });
+
+            return card;
+        }
+
+        function checkForMatch() {
+            const [card1, card2] = flippedCards;
+
+            if (card1.dataset.image === card2.dataset.image) {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                matchedCount += 2;
+
+                if (matchedCount === images.length) {
+                    setTimeout(() => alert('Tebrikler! Tüm eşleşmeleri buldunuz!'), 500);
+                }
+            } else {
+                setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                }, 1000);
+            }
+
+            flippedCards = [];
+        }
+
+        function initGame() {
+            shuffledImages.forEach(image => {
+                const card = createCard(image);
+                gameBoard.appendChild(card);
+            });
+        }
+
+        initGame();
+    </script>
+</body>
+</html>
